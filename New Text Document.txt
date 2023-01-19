@@ -1,0 +1,2 @@
+Mitigation of potential-induced degradation (PID) based on anti-reflection
+coating (ARC) structures of PERC solar cells
