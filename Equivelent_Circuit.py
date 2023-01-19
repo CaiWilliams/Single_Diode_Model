@@ -4,6 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.special import lambertw
 import scipy.constants as const
+from pvlib.pvsystem import i_from_v
 
 class cell:
     def __init__(self):
@@ -111,7 +112,7 @@ class cell:
         return
 
     def equivilent_cuircuit_jv(self, temperature = 273.15):
-        v = np.linspace(0,2,1000)
+        v = np.linspace(-2,2,1000)
         vt = (const.k * temperature) / const.e
         A = ((self.photogenerated + self.dark_satuartion) - v / self.shunt_resistance) / (1 + self.serise_resistance/self.shunt_resistance)
         B = (self.average_ideality * vt) / self.serise_resistance
@@ -125,6 +126,12 @@ class cell:
         print(B)
         return v,i
 
+    def equivilent_cuircuit_jv_2(self, temperature=273.15):
+        v = np.linspace(-2, 2, 1000)
+        nNsVth = self.average_ideality * 1 * (const.k * temperature/const.e)
+        i = i_from_v(self.shunt_resistance, self.serise_resistance, nNsVth, v, self.dark_satuartion, self.photogenerated)
+        return v, i
+
 
 
 Perc = cell()
@@ -136,6 +143,8 @@ Perc.calculate_local_ideality()
 Perc.load_sepectrum('AM1.5G')
 Perc.calculate_photogenerated()
 v,i = Perc.equivilent_cuircuit_jv()
+plt.plot(v,i)
+v,i = Perc.equivilent_cuircuit_jv_2()
 plt.plot(v,i)
 plt.show()
 
